@@ -46,7 +46,7 @@ function App() {
               key={colIndex}
               className="cell"
             >
-              {cell.isRevealed ? (cell.isMine ? "💣" : cell.adjacentMines || "") : ""}
+              
             </div>
           ))}
         </div>
