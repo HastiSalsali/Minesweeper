@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 const ROWS = 9;
 const COLS = 9;
+  
 
 const createEmptyGrid = () => {
   const grid = [];
@@ -23,6 +24,18 @@ const createEmptyGrid = () => {
   }
   return grid;
 };
+
+const placeMines = (grid) => {
+  const numMines = Math.floor((ROWS * COLS) / (ROWS + 3)); 
+  const row = 0;
+  const col = 0;
+  for (const i = 0; i < numMines; i++){
+    row = Math.floor(Math.random() * ROWS);
+    col = Math.floor(Math.random() * COLS);
+    grid[row][col].isMine = true;
+  }
+}
+
 
 
 
