@@ -14,7 +14,7 @@ const createEmptyGrid = () => {
       row.push({
         row: i,
         col: j,
-        isMine: false,
+        isBomb: false,
         isRevealed: false,
         isFlagged: false,
         adjacentMines: 0,
@@ -26,13 +26,17 @@ const createEmptyGrid = () => {
 };
 
 const placeMines = (grid) => {
-  const numMines = Math.floor((ROWS * COLS) / (ROWS + 3));
+  const numMines = ROWS * 2; 
   let row = 0;
   let col = 0;
   for (let i = 0; i < numMines; i++) {
     row = Math.floor(Math.random() * ROWS);
     col = Math.floor(Math.random() * COLS);
-    grid[row][col].isMine = true;
+    if (grid[row][col].isBomb) {
+      i--;
+    } else {
+      grid[row][col].isBomb = true;
+    }
   }
   return grid;
 }
@@ -43,9 +47,9 @@ const placeMines = (grid) => {
 
 function App() {
   function restartGame() {
-  const newGrid = placeMines(createEmptyGrid());
-  setGrid(newGrid);
-}
+    const newGrid = placeMines(createEmptyGrid());
+    setGrid(newGrid);
+  }
   const [grid, setGrid] = useState([]);
 
   useEffect(() => {
@@ -56,20 +60,33 @@ function App() {
 
 
   return (
-      <div className="grid">
-        {grid.map((row, rowIndex) => (
-          <div className="row" key={rowIndex}>
-            {row.map((cell, colIndex) => (
-              <div
-                key={colIndex}
-                className="cell"
-              >
+    <div className="grid">
+      {grid.map((row, rowIndex) => (
+        <div className="row" key={rowIndex}>
+          {row.map((cell, colIndex) => (
+            <div
+              key={colIndex}
+              className={
+                cell.isRevealed
+                  ? cell.isBomb
+                    ? "cell bomb"
+                    : "cell empty"
+                  : "cell"
+              }
+              onClick={() => {
+                if (!cell.isRevealed && !cell.isFlagged) {
+                  const newGrid = [...grid];
+                  newGrid[rowIndex][colIndex].isRevealed = true;
+                  setGrid(newGrid);
+                }
+              }}
+            >
 
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
   );
 }
 

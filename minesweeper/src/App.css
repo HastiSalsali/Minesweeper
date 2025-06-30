@@ -63,3 +63,15 @@
 .cell:hover {
   background-color: #ccc;
 }
+
+.cell.empty {
+  background-color: #979797;
+  cursor: default;
+}
+
+.cell.bomb {
+  background-image: url('../public/bomb.png'); /* If bomb.png is in the public folder */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
