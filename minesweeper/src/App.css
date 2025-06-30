@@ -70,7 +70,7 @@
 }
 
 .cell.bomb {
-  background-image: url('../public/bomb.png'); /* If bomb.png is in the public folder */
+  background-image: url('../public/bomb.png'); 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
