@@ -36,6 +36,13 @@ const placeMines = (grid) => {
       i--;
     } else {
       grid[row][col].isBomb = true;
+      for (let r = row - 1; r <= row + 1; r++) {
+        for (let c = col - 1; c <= col + 1; c++) {
+          if (r >= 0 && r < ROWS && c >= 0 && c < COLS && !grid[r][c].isBomb) {
+            grid[r][c].adjacentMines++;
+          }
+        }
+      }
     }
   }
   return grid;
@@ -81,7 +88,9 @@ function App() {
                 }
               }}
             >
-
+              {cell.isRevealed && !cell.isBomb && cell.adjacentMines > 0
+                ? cell.adjacentMines
+                : ""}
             </div>
           ))}
         </div>
