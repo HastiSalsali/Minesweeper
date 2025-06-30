@@ -25,6 +25,11 @@ const createEmptyGrid = () => {
   return grid;
 };
 
+function restartGame(setGrid) {
+  const newGrid = placeMines(createEmptyGrid());
+  setGrid(newGrid);
+}
+
 const placeMines = (grid) => {
   const numMines = ROWS; // adjust the number of mines as needed
   let row = 0;
@@ -62,6 +67,15 @@ function handleCellClick(cell, rowIndex, colIndex, grid, setGrid) {
   if (!cell.isRevealed && !cell.isFlagged) {
     const newGrid = [...grid];
     newGrid[rowIndex][colIndex].isRevealed = true;
+    if (cell.isBomb) {
+      newGrid.forEach(row => {
+        row.forEach(c => {
+          c.isRevealed = true;
+        });
+      });
+      setGrid(newGrid);
+      return;
+    }
     if (cell.adjacentMines == 0 && !cell.isBomb) {
       for (let r = rowIndex - 1; r <= rowIndex + 1; r++) {
         for (let c = colIndex - 1; c <= colIndex + 1; c++) {
@@ -80,48 +94,33 @@ function handleCellClick(cell, rowIndex, colIndex, grid, setGrid) {
   }
 }
 
+function App() {
+  const [grid, setGrid] = useState([]);
 
+  useEffect(() => {
+    restartGame(setGrid)
+  }, []
+  );
 
+  return (
+    <div className="grid">
+      {grid.map((row, rowIndex) => (
+        <div className="row" key={rowIndex}>
+          {row.map((cell, colIndex) => (
+            <div
+              key={colIndex}
+              className={setClassName(cell)}
+              onClick={() => handleCellClick(cell, rowIndex, colIndex, grid, setGrid)}
+            >
+              {cell.isRevealed && !cell.isBomb && cell.adjacentMines > 0
+                ? cell.adjacentMines
+                : ""}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
 
-  function App() {
-    function restartGame() {
-      const newGrid = placeMines(createEmptyGrid());
-      setGrid(newGrid);
-    }
-    const [grid, setGrid] = useState([]);
-
-    useEffect(() => {
-      restartGame()
-    }, []
-    );
-
-
-
-    return (
-      <div className="grid">
-        {grid.map((row, rowIndex) => (
-          <div className="row" key={rowIndex}>
-            {row.map((cell, colIndex) => (
-              <div
-                key={colIndex}
-                className={
-                  cell.isRevealed
-                    ? cell.isBomb
-                      ? "cell bomb"
-                      : "cell empty"
-                    : "cell"
-                }
-                onClick={() => handleCellClick(cell, rowIndex, colIndex, grid, setGrid)}
-              >
-                {cell.isRevealed && !cell.isBomb && cell.adjacentMines > 0
-                  ? cell.adjacentMines
-                  : ""}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  export default App;
+export default App;
