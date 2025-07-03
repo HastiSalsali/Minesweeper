@@ -5,7 +5,6 @@ import React, { useState, useEffect } from 'react';
 const ROWS = 9;
 const COLS = 9;
 
-
 const createEmptyGrid = () => {
   const grid = [];
   for (let i = 0; i < ROWS; i++) {
@@ -27,6 +26,9 @@ const createEmptyGrid = () => {
 
 function restartGame(setGrid) {
   const newGrid = placeMines(createEmptyGrid());
+  //next line is used for debugging purposes:
+  // to reveal the location of the bombs
+  //newGrid.forEach(row => row.forEach(cell => { if (cell.isBomb) cell.isRevealed = true; }));
   setGrid(newGrid);
 }
 
@@ -55,12 +57,13 @@ const placeMines = (grid) => {
 
 function setClassName(cell) {
   return (
-    cell.isRevealed
-      ? cell.isBomb
-        ? "cell bomb"
-        : "cell empty"
-      : "cell")
-    ;
+    cell.isFlagged
+      ? "cell flagged"
+      : cell.isRevealed
+        ? cell.isBomb
+          ? "cell bomb"
+          : "cell empty"
+        : "cell");
 }
 
 function handleCellClick(cell, rowIndex, colIndex, grid, setGrid) {
@@ -73,6 +76,7 @@ function handleCellClick(cell, rowIndex, colIndex, grid, setGrid) {
           c.isRevealed = true;
         });
       });
+      alert('Game Over!');
       setGrid(newGrid);
       return;
     }
@@ -91,36 +95,66 @@ function handleCellClick(cell, rowIndex, colIndex, grid, setGrid) {
       }
     }
     setGrid(newGrid);
+    if (checkWin(newGrid)) {
+      alert('You Win!');
+    }
   }
+}
+
+function handleRightClick(e, cell, rowIndex, colIndex, grid, setGrid) {
+  e.preventDefault();
+  if (cell.isRevealed) return;
+
+  const newGrid = [...grid];
+  newGrid[rowIndex][colIndex].isFlagged = !newGrid[rowIndex][colIndex].isFlagged;
+  setGrid(newGrid);
+}
+
+function checkWin(grid) {
+  for (let row of grid) {
+    for (let cell of row) {
+      if (!cell.isRevealed && !cell.isBomb) {
+        return false; // There are still unrevealed non-bomb cells
+      }
+    }
+  }
+  return true;
 }
 
 function App() {
   const [grid, setGrid] = useState([]);
-
   useEffect(() => {
     restartGame(setGrid)
   }, []
   );
-
   return (
-    <div className="grid">
-      {grid.map((row, rowIndex) => (
-        <div className="row" key={rowIndex}>
-          {row.map((cell, colIndex) => (
-            <div
-              key={colIndex}
-              className={setClassName(cell)}
-              onClick={() => handleCellClick(cell, rowIndex, colIndex, grid, setGrid)}
-            >
-              {cell.isRevealed && !cell.isBomb && cell.adjacentMines > 0
-                ? cell.adjacentMines
-                : ""}
-            </div>
-          ))}
-        </div>
-      ))}
+  <div className="game-container">
+    <h1>Minesweeper</h1>
+    <button className="restart-button" onClick={() => restartGame(setGrid)}>
+      Press to Restart
+    </button>
+    <div className="grid-container">
+      <div className="grid">
+        {grid.map((row, rowIndex) => (
+          <div className="row" key={rowIndex}>
+            {row.map((cell, colIndex) => (
+              <div
+                key={colIndex}
+                className={setClassName(cell)}
+                onClick={() => handleCellClick(cell, rowIndex, colIndex, grid, setGrid)}
+                onContextMenu={(e) => handleRightClick(e, cell, rowIndex, colIndex, grid, setGrid)}
+              >
+                {cell.isRevealed && !cell.isBomb && cell.adjacentMines > 0
+                    ? cell.adjacentMines
+                    : ""}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
-  );
+  </div>
+);
 }
 
 export default App;

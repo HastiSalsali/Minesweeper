@@ -37,11 +37,9 @@
   }
 }
 
-
-
 .grid {
   display: inline-block;
-  margin: 20px;
+  margin: 20px auto;
 }
 
 .row {
@@ -75,4 +73,32 @@
   background-position: center;
   background-repeat: no-repeat;
   cursor: default;
+}
+
+.cell.flagged {
+  background-color: black;
+  cursor: default;
+}
+
+.restart-button {
+  background-color: #61dafb;
+  border: none;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px; /* space between grid and button */
+  transition: background-color 0.3s ease;
+}
+
+.restart-button:hover {
+  background-color: #21a1f1;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* centers vertically */
+  align-items: center;      /* centers horizontally */
+  min-height: 100vh;        /* takes full viewport height */
 }
